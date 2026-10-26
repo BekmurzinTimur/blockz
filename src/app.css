@@ -1,0 +1,49 @@
+:root {
+  color-scheme: dark;
+  --bg: #14161c;
+  --text: #e9ecf2;
+  --text-muted: rgb(233 236 242 / 0.55);
+  --backdrop-1: #2b3346;
+  --backdrop-2: #3a2f3f;
+  --backdrop-3: #1f3a3a;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Out-of-focus room seen through a glass: soft, dim blobs of colour. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  background:
+    radial-gradient(40% 35% at 20% 25%, var(--backdrop-1), transparent 70%),
+    radial-gradient(35% 30% at 85% 40%, var(--backdrop-2), transparent 70%),
+    radial-gradient(45% 35% at 50% 95%, var(--backdrop-3), transparent 70%),
+    radial-gradient(20% 18% at 75% 10%, rgb(246 211 138 / 0.12), transparent 70%);
+  filter: blur(40px);
+}
