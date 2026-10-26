@@ -1,4 +1,4 @@
-export type BlockColor = 'blue' | 'teal' | 'green' | 'amber' | 'rose' | 'violet'
+export type BlockColor = 'green' | 'clay' | 'amber' | 'rose' | 'violet' | 'blue'
 export type BlockSize = 's' | 'm' | 'l'
 
 export interface Block {
@@ -6,27 +6,38 @@ export interface Block {
   name: string
   color: BlockColor
   size: BlockSize
+  order: number
+  /** Deleted blocks are kept so their history stays intact. */
+  deletedAt?: number
 }
 
-/** Soft ice tints, chosen to glow against the dark backdrop. */
+export const COLORS = Object.keys({
+  green: 0,
+  clay: 0,
+  amber: 0,
+  rose: 0,
+  violet: 0,
+  blue: 0,
+} satisfies Record<BlockColor, 0>) as BlockColor[]
+
+export const SIZES: BlockSize[] = ['s', 'm', 'l']
+
+export const SIZE_LABELS: Record<BlockSize, string> = { s: 'Small', m: 'Medium', l: 'Large' }
+
+export const SIZE_HINTS: Record<BlockSize, string> = { s: 'Quick', m: 'Some effort', l: 'Takes guts' }
+
+/** Dusty, earthy tints that read as tinted ice on the warm Bone background. */
 export const TINTS: Record<BlockColor, string> = {
-  blue: '#8ec5ff',
-  teal: '#7fe0d6',
-  green: '#a8e6a3',
-  amber: '#f6d38a',
-  rose: '#f5a8c0',
-  violet: '#c3a8f5',
+  green: '#839a7c',
+  clay: '#c99a7e',
+  amber: '#d1b375',
+  rose: '#ca9b9b',
+  violet: '#a492ab',
+  blue: '#8a9fb2',
 }
+
+/** Colours retired from the palette, and what stored data using them becomes. */
+export const RENAMED_COLORS: Record<string, BlockColor> = { teal: 'clay' }
 
 /** Cube side relative to the base unit: large is 2× small. */
 export const SIZE_SCALE: Record<BlockSize, number> = { s: 1, m: 1.5, l: 2 }
-
-// Temporary until blocks are user-created and persisted (milestone 2).
-export const DEMO_BLOCKS: Block[] = [
-  { id: 'pushups', name: '2 push-ups', color: 'amber', size: 's' },
-  { id: 'reading', name: '1 min reading', color: 'blue', size: 's' },
-  { id: 'breathing', name: 'Square breathing', color: 'teal', size: 'm' },
-  { id: 'mirror', name: 'Mirror work', color: 'rose', size: 'm' },
-  { id: 'belief', name: 'A better belief', color: 'violet', size: 's' },
-  { id: 'client', name: 'Call a client', color: 'green', size: 'l' },
-]

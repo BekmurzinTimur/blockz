@@ -1,11 +1,28 @@
 :root {
-  color-scheme: dark;
-  --bg: #14161c;
-  --text: #e9ecf2;
-  --text-muted: rgb(233 236 242 / 0.55);
-  --backdrop-1: #2b3346;
-  --backdrop-2: #3a2f3f;
-  --backdrop-3: #1f3a3a;
+  color-scheme: light;
+  /* "Bone": warm paper, ink-dark text, one quiet green accent. */
+  --bg: #e6e2d8;
+  --bg-top: #e1ddd1;
+  --bg-bottom: #eae6dd;
+  --text: #24201b;
+  --text-muted: #676257;
+  --icon: #3f3d37;
+  --sheet: #f6f3ec;
+  --panel: rgb(250 248 243 / 0.78);
+  --surface: #fbfaf7;
+  --surface-strong: #ffffff;
+  --hairline: rgb(36 32 27 / 0.08);
+  --line: rgb(36 32 27 / 0.12);
+  --fill: rgb(36 32 27 / 0.05);
+  --fill-strong: rgb(36 32 27 / 0.1);
+  --scrim: rgb(40 36 30 / 0.3);
+  --shadow: rgb(60 50 40 / 0.12);
+  --disabled: rgb(36 32 27 / 0.25);
+  --primary: #4f6b4a;
+  --on-primary: #ffffff;
+  --primary-soft: rgb(79 107 74 / 0.14);
+  --on-primary-soft: #3c4f35;
+  --danger: #9a4449;
 }
 
 *,
@@ -22,11 +39,14 @@ body {
   overscroll-behavior: none;
 }
 
+/* The ground lives on html so the backdrop below can sit between it and the content. */
+html {
+  background: linear-gradient(var(--bg-top), var(--bg-bottom)) fixed var(--bg);
+}
+
 body {
-  background: var(--bg);
   color: var(--text);
-  font-family:
-    ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Manrope Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -34,16 +54,63 @@ body {
   -webkit-user-select: none;
 }
 
-/* Out-of-focus room seen through a glass: soft, dim blobs of colour. */
-body::before {
+/* Soft daylight on paper: faint warm and cool patches, out of focus.
+   Positions follow the 390px mockup, anchored to the centre column. */
+:root {
+  --backdrop:
+    radial-gradient(170px 170px at calc(50% - 135px) 290px, rgb(255 255 255 / 0.55), transparent),
+    radial-gradient(180px 180px at calc(50% + 140px) 560px, rgb(214 204 184 / 0.45), transparent),
+    radial-gradient(160px 120px at calc(50% - 5px) calc(100% - 140px), rgb(222 214 198 / 0.5), transparent),
+    radial-gradient(110px 110px at calc(50% + 80px) 15px, rgb(255 252 244 / 0.6), transparent);
+}
+
+body::before,
+.screen::before {
   content: '';
   position: fixed;
-  inset: -10%;
+  inset: 0;
   z-index: -1;
-  background:
-    radial-gradient(40% 35% at 20% 25%, var(--backdrop-1), transparent 70%),
-    radial-gradient(35% 30% at 85% 40%, var(--backdrop-2), transparent 70%),
-    radial-gradient(45% 35% at 50% 95%, var(--backdrop-3), transparent 70%),
-    radial-gradient(20% 18% at 75% 10%, rgb(246 211 138 / 0.12), transparent 70%);
-  filter: blur(40px);
+  background: var(--backdrop);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* A full-screen layer above Today (Shelf, Day detail). */
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  isolation: isolate;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: linear-gradient(var(--bg-top), var(--bg-bottom)) fixed var(--bg);
+}
+
+.screen-inner {
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 20px) 20px calc(env(safe-area-inset-bottom) + 32px);
+}
+
+.back {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-left: -12px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: var(--icon);
+  cursor: pointer;
+}
+
+.card {
+  border-radius: 20px;
+  border: 1px solid var(--hairline);
+  background: var(--panel);
 }
