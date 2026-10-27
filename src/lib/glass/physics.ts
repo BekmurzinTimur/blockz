@@ -70,7 +70,8 @@ export class GlassWorld {
     velocityIterations: 8,
     gravity: { x: 0, y: 1.4, scale: 0.001 },
   })
-  private queue: CubeSpec[] = []
+  /** Cubes waiting to spawn, each with the gap to leave after the previous spawn. */
+  private queue: { spec: CubeSpec; gapMs: number }[] = []
   private accumulator = 0
   private simTime = 0
   private lastSpawnAt = -Infinity
@@ -82,13 +83,13 @@ export class GlassWorld {
   }
 
   /** Queue a cube; it spawns as soon as the previous one has cleared the spawn point. */
-  dropCube(spec: CubeSpec) {
-    this.queue.push(spec)
+  dropCube(spec: CubeSpec, gapMs = SPAWN_GAP_MS) {
+    this.queue.push({ spec, gapMs })
   }
 
   /** Removes a cube and returns it (for a fade-out), or nothing if it hadn't spawned yet. */
   removeCube(id: string): Cube | undefined {
-    this.queue = this.queue.filter((c) => c.id !== id)
+    this.queue = this.queue.filter((q) => q.spec.id !== id)
     const cube = this.cubes.get(id)
     if (!cube) return
     this.detach(cube)
@@ -111,13 +112,6 @@ export class GlassWorld {
     }
   }
 
-  /** Put a cube straight into its saved resting pose, asleep, so it doesn't re-fall. */
-  placeCube(spec: CubeSpec, pose: Pose) {
-    const body = this.addCubeBody(spec, pose)
-    this.cubes.get(spec.id)!.landed = true
-    Sleeping.set(body, true)
-  }
-
   /**
    * Whether the pile has reached the rim. If so, says which cubes stay in this
    * glass and which move on: anything still queued or in flight, and cubes
@@ -135,7 +129,7 @@ export class GlassWorld {
       if (cube.landed && cube.body.position.y > GLASS.rimY) stay.push(cube)
       else carry.push(spec(cube))
     }
-    return { stay, carry: [...carry, ...this.queue] }
+    return { stay, carry: [...carry, ...this.queue.map((q) => q.spec)] }
   }
 
   /** Empties the glass and the queue, returning the cubes that were in it. */
@@ -153,8 +147,9 @@ export class GlassWorld {
   }
 
   private spawnNext() {
-    if (this.holdSpawns || !this.queue.length || this.simTime - this.lastSpawnAt < SPAWN_GAP_MS) return
-    const spec = this.queue.shift()!
+    const next = this.queue[0]
+    if (this.holdSpawns || !next || this.simTime - this.lastSpawnAt < next.gapMs) return
+    const { spec } = this.queue.shift()!
     const side = cubeSide(spec.size)
     const spread = (GLASS.half * 2 - side) * 0.5
     const body = this.addCubeBody(spec, {

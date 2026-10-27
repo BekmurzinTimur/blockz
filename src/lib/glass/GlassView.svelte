@@ -25,6 +25,7 @@
   } = $props()
 
   const FADE_MS = 350
+  const REFILL_GAP_MS = 250
   // Full-glass swap timeline (ms): celebrate, then the full glass leaves and a fresh one arrives.
   const GLOW_IN = 250
   const GLOW_OUT_AT = 900
@@ -64,18 +65,15 @@
     fading = []
   }
 
-  /** Replaces the glass's contents with stored cubes, already settled where they were. */
+  /** Replaces the glass's contents with stored cubes, which fall in again. */
   export function restore(cubes: CubeRecord[]) {
     reset()
     place(cubes)
   }
 
+  /** On reopening, the glass refills itself: every cube falls again, oldest first, one after another. */
   function place(cubes: CubeRecord[]) {
-    for (const cube of cubes) {
-      // A cube without a pose was still falling when the app closed: drop it again.
-      if (cube.pose) world.placeCube(cube, cube.pose)
-      else world.dropCube(cube)
-    }
+    for (const cube of cubes) world.dropCube(cube, REFILL_GAP_MS)
   }
 
   function startSwap(split: FullSplit, now: number) {
